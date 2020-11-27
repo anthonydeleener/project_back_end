@@ -18,7 +18,7 @@ router.post("/login", function (req, res, next) {
   user.checkCredentials(req.body.email, req.body.password).then((match) => {
     if (match) {
       jwt.sign(
-        { username: user.username },
+        { email: user.email },
         jwtSecret,
         { expiresIn: LIFETIME_JWT },
         (err, token) => {
@@ -27,7 +27,7 @@ router.post("/login", function (req, res, next) {
             return res.status(500).send(err.message);
           }
           console.log("POST users/ token:", token);
-          return res.json({ username: user.username, token });
+          return res.json({ email: user.email, token });
         }
       );
     } else {
@@ -42,11 +42,11 @@ router.post("/", function (req, res, next) {
   console.log("POST users/", User.list);
   console.log("email:", req.body.email);
   if (User.isUser(req.body.email)) return res.status(409).end();
-  let newUser = new User(req.body.email, req.body.email, req.body.password);
+  let newUser = new User(req.body.username, req.body.email, req.body.password);
   newUser.save().then(() => {
     console.log("afterRegisterOp:", User.list);
     jwt.sign(
-      { username: newUser.username },
+      { email: newUser.email },
       jwtSecret,
       { expiresIn: LIFETIME_JWT },
       (err, token) => {
@@ -55,7 +55,7 @@ router.post("/", function (req, res, next) {
           return res.status(500).send(err.message);
         }
         console.log("POST users/ token:", token);
-        return res.json({ username: newUser.username, token });
+        return res.json({ email: newUser.email, token });
       }
     );
     /* Example on how to create and use your own asynchronous function (signAsynchronous())

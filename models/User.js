@@ -17,7 +17,7 @@ class User {
     const hashedPassword = await bcrypt.hash(this.password, saltRounds);
     console.log("save:", this.email);
     userList.push({
-      username: this.email,
+      username: this.username,
       email: this.email,
       password: hashedPassword,
     });
@@ -45,16 +45,16 @@ class User {
     return userList;
   }
 
-  static isUser(username) {
-    const userFound = User.getUserFromList(username);
+  static isUser(email) {
+    const userFound = User.getUserFromList(email);
     console.log("User::isUser:", userFound);
     return userFound !== undefined;
   }
 
-  static getUserFromList(username) {
+  static getUserFromList(email) {
     const userList = getUserListFromFile(FILE_PATH);
     for (let index = 0; index < userList.length; index++) {
-      if (userList[index].username === username) return userList[index];
+      if (userList[index].email === email) return userList[index];
     }
     return;
   }
