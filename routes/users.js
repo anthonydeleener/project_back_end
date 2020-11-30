@@ -13,12 +13,12 @@ router.get("/", authorize, function (req, res, next) {
 
 /* POST user data for authentication */
 router.post("/login", function (req, res, next) {
-  let user = new User(req.body.email, req.body.email, req.body.password);
+  let user = new User(req.body.username, "email", req.body.password);
   console.log("POST users/login:", User.list);
-  user.checkCredentials(req.body.email, req.body.password).then((match) => {
+  user.checkCredentials(req.body.username, req.body.password).then((match) => {
     if (match) {
       jwt.sign(
-        { email: user.email },
+        { username: user.username },
         jwtSecret,
         { expiresIn: LIFETIME_JWT },
         (err, token) => {
@@ -27,12 +27,12 @@ router.post("/login", function (req, res, next) {
             return res.status(500).send(err.message);
           }
           console.log("POST users/ token:", token);
-          return res.json({ email: user.email, token });
+          return res.json({ username: user.username, token });
         }
       );
     } else {
       console.log("POST users/login Error:", "Unauthentified");
-      return res.status(401).send("bad email/password");
+      return res.status(401).send("bad username/password");
     }
   });
 });
@@ -41,12 +41,12 @@ router.post("/login", function (req, res, next) {
 router.post("/", function (req, res, next) {
   console.log("POST users/", User.list);
   console.log("email:", req.body.email);
-  if (User.isUser(req.body.email)) return res.status(409).end();
+  if (User.isUserEmail(req.body.email) || User.isUserUsername(req.body.username)) return res.status(409).end();
   let newUser = new User(req.body.username, req.body.email, req.body.password);
   newUser.save().then(() => {
     console.log("afterRegisterOp:", User.list);
     jwt.sign(
-      { email: newUser.email },
+      { username: newUser.username },
       jwtSecret,
       { expiresIn: LIFETIME_JWT },
       (err, token) => {
@@ -55,7 +55,7 @@ router.post("/", function (req, res, next) {
           return res.status(500).send(err.message);
         }
         console.log("POST users/ token:", token);
-        return res.json({ email: newUser.email, token });
+        return res.json({ username: newUser.username, token });
       }
     );
     /* Example on how to create and use your own asynchronous function (signAsynchronous())
@@ -74,7 +74,7 @@ router.post("/", function (req, res, next) {
 /* GET user object from username */
 router.get("/:username", function (req, res, next) {
   console.log("GET users/:username", req.params.username);
-  const userFound = User.getUserFromList(req.params.username);
+  const userFound = User.getUserFromListWithUsername(req.params.username);
   if (userFound) {
     return res.json(userFound);
   } else {

@@ -26,9 +26,9 @@ class User {
   }
 
   /* return a promise with classic promise syntax*/
-  checkCredentials(email, password) {
-    if (!email || !password) return false;
-    let userFound = User.getUserFromList(email);
+  checkCredentials(username, password) {
+    if (!username || !password) return false;
+    let userFound = User.getUserFromListWithUsername(username);
     console.log("User::checkCredentials:", userFound, " password:", password);
     if (!userFound) return Promise.resolve(false);
     //try {
@@ -45,16 +45,30 @@ class User {
     return userList;
   }
 
-  static isUser(email) {
-    const userFound = User.getUserFromList(email);
+  static isUserEmail(email) {
+    const userFound = User.getUserFromListWithEmail(email);
     console.log("User::isUser:", userFound);
     return userFound !== undefined;
   }
 
-  static getUserFromList(email) {
+  static isUserUsername(username) {
+    const userFound = User.getUserFromListWithUsername(username);
+    console.log("User::isUser:", userFound);
+    return userFound !== undefined;
+  }
+
+  static getUserFromListWithEmail(email) {
     const userList = getUserListFromFile(FILE_PATH);
     for (let index = 0; index < userList.length; index++) {
       if (userList[index].email === email) return userList[index];
+    }
+    return;
+  }
+
+  static getUserFromListWithUsername(username) {
+    const userList = getUserListFromFile(FILE_PATH);
+    for (let index = 0; index < userList.length; index++) {
+      if (userList[index].username === username) return userList[index];
     }
     return;
   }
