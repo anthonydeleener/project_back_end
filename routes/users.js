@@ -3,7 +3,7 @@ var router = express.Router();
 var User = require("../models/User.js");
 let { authorize, signAsynchronous } = require("../utils/auth");
 const jwt = require("jsonwebtoken");
-const jwtSecret = "jkjJ1235Ohno!";
+const jwtSecret = "jQxT18353AUB!";
 const LIFETIME_JWT = 24 * 60 * 60 * 1000; // 10;// in seconds // 24 * 60 * 60 * 1000 = 24h
 
 /* GET user list : secure the route with JWT authorization */
@@ -58,16 +58,6 @@ router.post("/", function (req, res, next) {
         return res.json({ username: newUser.username, token });
       }
     );
-    /* Example on how to create and use your own asynchronous function (signAsynchronous())
-    signAsynchronous(newUser, (err, token) => {
-      if (err) {
-        console.error("POST users/ :", err);
-        return res.status(500).send(err.message);
-      }
-      console.log("POST users/ token:", token);
-      return res.json({ username: req.body.email, token });
-    });
-    */
   });
 });
 
